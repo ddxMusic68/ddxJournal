@@ -20,7 +20,7 @@ class EntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateFormat('MMM d, yyyy • h:mm a').format(entry.createdAt);
+    final dateStr = DateFormat('MMM d, yyyy • h:mm a').format(entry.date);
     final preview = _stripHtml(entry.content);
     final hasMedia = entry.mediaPaths.isNotEmpty;
 

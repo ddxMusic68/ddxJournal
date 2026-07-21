@@ -78,9 +78,9 @@ class DatabaseService {
     final data = await _getData();
     final dateOnly = _dateOnly(date);
     return data.entries.any((e) =>
-        _dateOnly(e.createdAt).year == dateOnly.year &&
-        _dateOnly(e.createdAt).month == dateOnly.month &&
-        _dateOnly(e.createdAt).day == dateOnly.day);
+        _dateOnly(e.date).year == dateOnly.year &&
+        _dateOnly(e.date).month == dateOnly.month &&
+        _dateOnly(e.date).day == dateOnly.day);
   }
 
   Future<JournalEntry?> getEntryForDate(DateTime date) async {
@@ -88,9 +88,9 @@ class DatabaseService {
     final dateOnly = _dateOnly(date);
     try {
       return data.entries.firstWhere((e) =>
-          _dateOnly(e.createdAt).year == dateOnly.year &&
-          _dateOnly(e.createdAt).month == dateOnly.month &&
-          _dateOnly(e.createdAt).day == dateOnly.day);
+          _dateOnly(e.date).year == dateOnly.year &&
+          _dateOnly(e.date).month == dateOnly.month &&
+          _dateOnly(e.date).day == dateOnly.day);
     } catch (_) {
       return null;
     }
@@ -100,8 +100,8 @@ class DatabaseService {
     final data = await _getData();
     final dates = <DateTime>{};
     for (final e in data.entries) {
-      final d = e.createdAt;
-      if (d.year == year && d.month == month) {
+      final d = e.date;
+      if (d.year == year && d.month == month && e.hasTextContent) {
         dates.add(_dateOnly(d));
       }
     }
@@ -135,7 +135,7 @@ class DatabaseService {
   Future<List<JournalEntry>> getAllEntries() async {
     final data = await _getData();
     final sorted = List<JournalEntry>.from(data.entries)
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      ..sort((a, b) => b.date.compareTo(a.date));
     return sorted;
   }
 
@@ -147,7 +147,7 @@ class DatabaseService {
             e.title.toLowerCase().contains(q) ||
             e.content.toLowerCase().contains(q))
         .toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      ..sort((a, b) => b.date.compareTo(a.date));
     return results;
   }
 
@@ -196,5 +196,26 @@ class DatabaseService {
     }
 
     await _saveData();
+  }
+
+  Future<void> loadBulk(List<JournalEntry> entries, List<Tag> tags) async {
+    _data = _AppData()
+      ..entries = entries
+      ..tags = tags
+      ..nextEntryId = entries.isEmpty
+          ? 1
+          : entries.map((e) => e.id ?? 0).reduce((a, b) => a > b ? a : b) + 1
+      ..nextTagId = tags.isEmpty
+          ? 1
+          : tags.map((t) => t.id ?? 0).reduce((a, b) => a > b ? a : b) + 1;
+    await _saveData();
+  }
+
+  Future<void> resetAll() async {
+    final file = File(await _path);
+    if (await file.exists()) {
+      await file.delete();
+    }
+    _data = _AppData();
   }
 }

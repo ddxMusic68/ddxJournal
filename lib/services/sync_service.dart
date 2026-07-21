@@ -251,6 +251,15 @@ class SyncService {
     );
   }
 
+  Future<void> deleteAllRemote() async {
+    final token = await _requireToken();
+    await _dio.post(
+      'https://api.dropboxapi.com/2/files/delete_v2',
+      data: {'path': _remoteBasePath},
+      options: _authOptions(token),
+    );
+  }
+
   Future<void> createFolder(String remotePath) async {
     final token = await _requireToken();
     await _dio.post(

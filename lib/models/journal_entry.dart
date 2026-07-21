@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 class JournalEntry {
   final int? id;
   final String title;
   final String content;
   final List<String> mediaPaths;
   final List<String> tags;
-  final DateTime createdAt;
+  final DateTime date;
   final DateTime updatedAt;
 
   const JournalEntry({
@@ -13,7 +15,7 @@ class JournalEntry {
     required this.content,
     this.mediaPaths = const [],
     this.tags = const [],
-    required this.createdAt,
+    required this.date,
     required this.updatedAt,
   });
 
@@ -23,7 +25,7 @@ class JournalEntry {
     String? content,
     List<String>? mediaPaths,
     List<String>? tags,
-    DateTime? createdAt,
+    DateTime? date,
     DateTime? updatedAt,
   }) {
     return JournalEntry(
@@ -32,7 +34,7 @@ class JournalEntry {
       content: content ?? this.content,
       mediaPaths: mediaPaths ?? this.mediaPaths,
       tags: tags ?? this.tags,
-      createdAt: createdAt ?? this.createdAt,
+      date: date ?? this.date,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
@@ -43,7 +45,7 @@ class JournalEntry {
       'title': title,
       'content': content,
       'media_paths': mediaPaths.join(','),
-      'created_at': createdAt.toIso8601String(),
+      'date': date.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
   }
@@ -54,8 +56,23 @@ class JournalEntry {
       title: map['title'] as String,
       content: map['content'] as String,
       mediaPaths: (map['media_paths'] as String?)?.split(',').where((s) => s.isNotEmpty).toList() ?? [],
-      createdAt: DateTime.parse(map['created_at'] as String),
+      date: DateTime.parse(map['date'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
     );
+  }
+
+  bool get hasTextContent {
+    try {
+      final data = jsonDecode(content);
+      if (data is! List) return false;
+      final text = data
+          .whereType<Map<String, dynamic>>()
+          .map((op) => op['insert'] ?? '')
+          .whereType<String>()
+          .join();
+      return text.trim().isNotEmpty;
+    } catch (_) {
+      return content.trim().isNotEmpty;
+    }
   }
 }

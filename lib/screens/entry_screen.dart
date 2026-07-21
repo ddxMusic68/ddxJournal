@@ -70,25 +70,28 @@ class _EntryScreenState extends State<EntryScreen> {
 
   Future<void> _save() async {
     final content = jsonEncode(_quillController.document.toDelta().toJson());
-
-    if (content.isEmpty) return;
-
     final now = DateTime.now();
-    final createdAt = widget.entry?.createdAt ??
-        (widget.entryDate != null
-            ? DateTime(widget.entryDate!.year, widget.entryDate!.month, widget.entryDate!.day, now.hour, now.minute, now.second)
-            : now);
+
     final entry = JournalEntry(
       id: widget.entry?.id,
       title: '',
       content: content,
       mediaPaths: _mediaPaths,
       tags: _tags,
-      createdAt: createdAt,
+      date: widget.entry?.date ??
+          (widget.entryDate != null
+              ? DateTime(widget.entryDate!.year, widget.entryDate!.month, widget.entryDate!.day, now.hour, now.minute, now.second)
+              : now),
       updatedAt: now,
     );
 
     final journal = context.read<JournalProvider>();
+    if (!entry.hasTextContent && _mediaPaths.isEmpty) {
+      if (widget.entry != null) {
+        await journal.deleteEntry(widget.entry!.id!);
+      }
+      return;
+    }
     if (widget.entry != null) {
       await journal.updateEntry(entry);
     } else {
@@ -116,9 +119,8 @@ class _EntryScreenState extends State<EntryScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.entry != null
-              ? 'Edit Entry'
-              : DateFormat.yMMMMd().format(widget.entryDate ?? DateTime.now())),
+          title: Text(DateFormat.yMMMMd().format(
+              widget.entry?.date ?? widget.entryDate ?? DateTime.now())),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),

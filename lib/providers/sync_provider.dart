@@ -121,4 +121,22 @@ class SyncProvider extends ChangeNotifier {
   Future<void> syncNow() async {
     await fullSync();
   }
+
+  Future<void> resetCloud() async {
+    _syncError = null;
+    _isSyncing = true;
+    notifyListeners();
+    try {
+      await _syncService.deleteAllRemote();
+      _lastSyncTime = null;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('last_sync_time');
+    } catch (e) {
+      _syncError = e is DioException
+          ? 'Reset failed: ${e.response?.data ?? e.message}'
+          : 'Reset failed: ${e.toString()}';
+    }
+    _isSyncing = false;
+    notifyListeners();
+  }
 }
