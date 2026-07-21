@@ -96,10 +96,10 @@ Tests can be added by creating a `test/` directory and running `flutter test`.
 | Platform | Status |
 |---|---|
 | Android | Supported |
-| iOS | Supported |
-| Web | Supported |
-| Linux | Supported |
-| macOS | Supported |
+| iOS | Unknown |
+| Web | Unsupported |
+| Linux | Unknown |
+| macOS | Unknown |
 | Windows | Supported |
 
 ## Contributing
@@ -108,3 +108,5 @@ Tests can be added by creating a `test/` directory and running `flutter test`.
 2. Create a feature branch.
 3. Run `flutter analyze` before committing.
 4. Open a pull request with a description of your changes.
+
+## screenshots
