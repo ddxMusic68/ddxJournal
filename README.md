@@ -1,5 +1,3 @@
-# ddxJournal
-
 A personal journaling app built with Flutter. Write daily entries organized by a calendar view, with rich text editing, photo attachments, tagging, PIN privacy lock, and optional Dropbox cloud sync.
 
 ## Features
@@ -109,4 +107,21 @@ Tests can be added by creating a `test/` directory and running `flutter test`.
 3. Run `flutter analyze` before committing.
 4. Open a pull request with a description of your changes.
 
-## screenshots
+## Screenshots
+<img width="154" height="338" alt="Screenshot 2026-07-20 204719" src="https://github.com/user-attachments/assets/fda3ed4d-1a07-4785-8f34-813a8e7edb85" />
+
+<img width="156" height="338" alt="Screenshot 2026-07-20 205333" src="https://github.com/user-attachments/assets/bf125943-5e0c-440d-b311-7f21866ea38d" />
+
+<img width="155" height="353" alt="Screenshot 2026-07-20 204706" src="https://github.com/user-attachments/assets/f8fb506f-22f0-43dd-8175-cbc504fdd337" />
+
+<img width="152" height="339" alt="Screenshot 2026-07-20 204713" src="https://github.com/user-attachments/assets/f9c0546f-e926-42b8-9149-2e5880b2ab71" />
+
+## Todo
+- Add a green color scheme
+- add a color scheme picker in settings
+- make sync ask you for time periods for sync
+- make sync work with deleting entries
+- make disabling sync not forget your key
+- resize icon
+
+
