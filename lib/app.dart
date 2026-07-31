@@ -5,12 +5,17 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/lock_screen.dart';
 import 'screens/home_screen.dart';
+import '../providers/settings_provider.dart';
+import '../utils/constants.dart';
+
 
 class JournalApp extends StatelessWidget {
   const JournalApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    SettingsProvider settings = context.watch<SettingsProvider>();
+
     return MaterialApp(
       title: 'Journal',
       debugShowCheckedModeBanner: false,
@@ -23,21 +28,9 @@ class JournalApp extends StatelessWidget {
       supportedLocales: const [
         Locale('en'),
       ],
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6750A4),
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6750A4),
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
-      themeMode: ThemeMode.system,
+      theme: _buildLightTheme(),
+      darkTheme: _buildDarkTheme(),
+      themeMode: _getThemeMode(settings.themeMode),
       home: Consumer<AuthProvider>(
         builder: (context, auth, _) {
           if (auth.pinIsSet && !auth.isAuthenticated) {
@@ -48,4 +41,43 @@ class JournalApp extends StatelessWidget {
       ),
     );
   }
+
+  
+  ThemeMode _getThemeMode(AppThemeMode mode) {
+    switch (mode) {
+      case AppThemeMode.light:
+        return ThemeMode.light;
+      case AppThemeMode.dark:
+        return ThemeMode.dark;
+      case AppThemeMode.system:
+        return ThemeMode.system;
+    }
+  }
+
+  ThemeData _buildLightTheme() {
+  return ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.mintDark,
+      primary: AppColors.mintDark,
+      secondary: AppColors.mint,
+      surface: AppColors.background,
+    ),
+    scaffoldBackgroundColor: AppColors.background,
+    useMaterial3: true,
+  );
+}
+
+ThemeData _buildDarkTheme() {
+  return ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.darkGreenPrimary,
+      primary: AppColors.darkGreenPrimary,
+      secondary: AppColors.darkGreenAccent,
+      surface: AppColors.darkGreenSurface,
+      brightness: Brightness.dark,
+    ),
+    scaffoldBackgroundColor: AppColors.darkGreenBg,
+    useMaterial3: true,
+  );
+}
 }

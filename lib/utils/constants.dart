@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
-const Color primaryColor = Color(0xFF6750A4);
-const Color secondaryColor = Color(0xFF625B71);
-const Color tertiaryColor = Color(0xFF7D5260);
+class AppColors {
+  static const mint = Color(0xFF98FF98);
+  static const mintDark = Color(0xFF00CC66);
+  static const mintLight = Color(0xFF016305);
+  static const coral = Color(0xFFFF6B6B);
+  static const coralDark = Color(0xFFCC3333);
+  static const coralLight = Color(0xFFF2D5D5);
+  static const background = Color(0xFFF5FFF5);
+  static const surface = Color(0xFFFFFFFF);
+  static const textPrimary = Color(0xFF1A1A1A);
+  static const textSecondary = Color(0xFF666666);
+  static const emptySquare = Color(0xFFE0E0E0);
 
-const List<int> tagColors = [
-  0xFFE8DEF8,
-  0xFFFFD8E4,
-  0xFFD0BCFF,
-  0xFFCCC2DC,
-  0xFFEFB8C8,
-  0xFF7D5260,
-  0xFF625B71,
-  0xFF6750A4,
-];
+  static const darkGreenBg = Color(0xFF0D1F0D);
+  static const darkGreenSurface = Color(0xFF1A2E1A);
+  static const darkGreenPrimary = Color(0xFF4CAF50);
+  static const darkGreenAccent = Color(0xFF81C784);
+}

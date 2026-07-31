@@ -178,11 +178,7 @@ class _SyncScreenState extends State<SyncScreen> {
         SwitchListTile(
           title: const Text('Sync Enabled'),
           value: sync.isSyncEnabled,
-          onChanged: (value) {
-            if (!value) {
-              sync.disableSync();
-            }
-          },
+          onChanged: (value) => sync.setSyncEnabled(value),
         ),
         if (sync.lastSyncTime != null)
           ListTile(

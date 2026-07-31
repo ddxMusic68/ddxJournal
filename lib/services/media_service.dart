@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import '../utils/app_paths.dart';
 
 class MediaService {
   final ImagePicker _picker = ImagePicker();
 
   Future<String> get _mediaDir async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final mediaDir = Directory(p.join(appDir.path, 'media'));
+    final appDir = await getAppDataDirectory();
+    final mediaDir = Directory(p.join(appDir, 'media'));
     if (!await mediaDir.exists()) {
       await mediaDir.create(recursive: true);
     }

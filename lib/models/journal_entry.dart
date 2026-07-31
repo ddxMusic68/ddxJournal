@@ -45,6 +45,7 @@ class JournalEntry {
       'title': title,
       'content': content,
       'media_paths': mediaPaths.join(','),
+      'tags': tags.join(','),
       'date': date.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -56,6 +57,7 @@ class JournalEntry {
       title: map['title'] as String,
       content: map['content'] as String,
       mediaPaths: (map['media_paths'] as String?)?.split(',').where((s) => s.isNotEmpty).toList() ?? [],
+      tags: (map['tags'] as String?)?.split(',').where((s) => s.isNotEmpty).toList() ?? [],
       date: DateTime.parse(map['date'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
     );

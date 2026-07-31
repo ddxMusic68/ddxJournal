@@ -115,6 +115,14 @@ class ImportExportService {
       }
     }
 
+    final existingDeleted = await db.getDeletedEntryIds();
+    final importedDeleted =
+        (importedData['deletedEntryIds'] as List?)?.cast<int>() ?? [];
+    final deleted = {...existingDeleted, ...importedDeleted};
+    for (final id in deleted) {
+      entryMap.remove(id);
+    }
+
     final tagMap = <String, Tag>{};
     for (final t in existingTags) {
       tagMap[t.name] = t;
@@ -125,7 +133,8 @@ class ImportExportService {
       }
     }
 
-    await db.loadBulk(entryMap.values.toList(), tagMap.values.toList());
+    await db.loadBulk(entryMap.values.toList(), tagMap.values.toList(),
+        deletedEntryIds: deleted.toList());
   }
 
   List<JournalEntry> _parseEntries(Map<String, dynamic> data) {

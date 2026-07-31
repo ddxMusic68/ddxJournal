@@ -1,19 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import '../models/journal_entry.dart';
 import '../models/tag.dart';
+import '../utils/app_paths.dart';
 
 class _AppData {
   int nextEntryId = 1;
   int nextTagId = 1;
   List<JournalEntry> entries = [];
   List<Tag> tags = [];
+  List<int> deletedEntryIds = [];
 }
 
 class DatabaseService {
   static DatabaseService? _instance;
+  static String? _testDataPathOverride;
   _AppData? _data;
   String? _filePath;
 
@@ -24,16 +27,30 @@ class DatabaseService {
     return _instance!;
   }
 
+  @visibleForTesting
+  static void setDataPathOverride(String path) {
+    _testDataPathOverride = path;
+    _instance?._data = null;
+    _instance?._filePath = null;
+  }
+
+  void reloadFromDisk() {
+    _data = null;
+  }
+
   Future<String> get _path async {
+    if (_testDataPathOverride != null) {
+      return p.join(_testDataPathOverride!, 'journal_data.json');
+    }
     if (_filePath != null) return _filePath!;
-    final dir = await getApplicationDocumentsDirectory();
-    _filePath = p.join(dir.path, 'journal_data.json');
+    final dir = await getAppDataDirectory();
+    _filePath = p.join(dir, 'journal_data.json');
     return _filePath!;
   }
 
   Future<String> get dataDirectory async {
-    final dir = await getApplicationDocumentsDirectory();
-    return dir.path;
+    final dir = await getAppDataDirectory();
+    return dir;
   }
 
   Future<_AppData> _getData() async {
@@ -51,7 +68,9 @@ class DatabaseService {
         ..tags = (json['tags'] as List?)
                 ?.map((e) => Tag.fromMap(e as Map<String, dynamic>))
                 .toList() ??
-            [];
+            []
+        ..deletedEntryIds =
+            (json['deletedEntryIds'] as List?)?.cast<int>() ?? [];
     } else {
       _data = _AppData();
     }
@@ -66,6 +85,7 @@ class DatabaseService {
       'nextTagId': data.nextTagId,
       'entries': data.entries.map((e) => e.toMap()).toList(),
       'tags': data.tags.map((t) => t.toMap()).toList(),
+      'deletedEntryIds': data.deletedEntryIds,
     };
     await file.writeAsString(jsonEncode(json));
   }
@@ -129,6 +149,9 @@ class DatabaseService {
   Future<void> deleteEntry(int id) async {
     final data = await _getData();
     data.entries.removeWhere((e) => e.id == id);
+    if (!data.deletedEntryIds.contains(id)) {
+      data.deletedEntryIds.add(id);
+    }
     await _saveData();
   }
 
@@ -198,10 +221,17 @@ class DatabaseService {
     await _saveData();
   }
 
-  Future<void> loadBulk(List<JournalEntry> entries, List<Tag> tags) async {
+  Future<List<int>> getDeletedEntryIds() async {
+    final data = await _getData();
+    return List<int>.from(data.deletedEntryIds);
+  }
+
+  Future<void> loadBulk(List<JournalEntry> entries, List<Tag> tags,
+      {List<int>? deletedEntryIds}) async {
     _data = _AppData()
       ..entries = entries
       ..tags = tags
+      ..deletedEntryIds = deletedEntryIds ?? []
       ..nextEntryId = entries.isEmpty
           ? 1
           : entries.map((e) => e.id ?? 0).reduce((a, b) => a > b ? a : b) + 1

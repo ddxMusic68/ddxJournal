@@ -87,6 +87,19 @@ class SyncProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setSyncEnabled(bool value) async {
+    _isSyncEnabled = value;
+    _syncError = null;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('sync_enabled', value);
+
+    notifyListeners();
+    if (value) {
+      await fullSync();
+    }
+  }
+
   Future<void> fullSync() async {
     if (!_isSyncEnabled || !_isAuthenticated || _isSyncing) return;
 
@@ -98,6 +111,7 @@ class SyncProvider extends ChangeNotifier {
       final dataPath = await _db.dataDirectory;
       final mediaDir = '$dataPath/media';
       await _syncService.fullSync('$dataPath/journal_data.json', mediaDir);
+      _db.reloadFromDisk();
       _lastSyncTime = DateTime.now();
 
       final prefs = await SharedPreferences.getInstance();

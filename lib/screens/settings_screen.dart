@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/journal_provider.dart';
+import '../providers/settings_provider.dart';
 import '../providers/sync_provider.dart';
 import '../services/database_service.dart';
 import '../services/import_export_service.dart';
@@ -14,6 +15,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final sync = context.watch<SyncProvider>();
+    final settings = context.watch<SettingsProvider>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
@@ -50,6 +52,33 @@ class SettingsScreen extends StatelessWidget {
                 }
               }
             },
+          ),
+          const Divider(),
+          const _SectionHeader(title: 'Appearance'),
+          RadioGroup<AppThemeMode>(
+            groupValue: settings.themeMode,
+            onChanged: (mode) {
+              if (mode != null) settings.setThemeMode(mode);
+            },
+            child: const Column(
+              children: [
+                RadioListTile<AppThemeMode>(
+                  value: AppThemeMode.light,
+                  title: Text('Light'),
+                  secondary: Icon(Icons.light_mode),
+                ),
+                RadioListTile<AppThemeMode>(
+                  value: AppThemeMode.system,
+                  title: Text('System'),
+                  secondary: Icon(Icons.brightness_auto),
+                ),
+                RadioListTile<AppThemeMode>(
+                  value: AppThemeMode.dark,
+                  title: Text('Dark'),
+                  secondary: Icon(Icons.dark_mode),
+                ),
+              ],
+            ),
           ),
           const Divider(),
           const _SectionHeader(title: 'Sync'),

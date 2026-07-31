@@ -54,12 +54,12 @@ lib/
 ├── providers/                 # ChangeNotifiers (Auth, Journal, Sync)
 ├── screens/                   # UI screens (Home, Entry, Settings, Sync, Lock)
 ├── services/                  # Singletons (Database, Auth, Sync, Media, Import/Export)
-├── widgets/                   # Reusable UI components (TagChip, EntryCard)
+├── widgets/                   # Reusable UI components (TagChip)
 └── utils/                     # Constants (colors)
 ```
 
 - **State management:** Provider with three `ChangeNotifier`s (`AuthProvider`, `JournalProvider`, `SyncProvider`).
-- **Data persistence:** Single JSON file (`journal_data.json`) in the app documents directory, with an in-memory cache.
+- **Data persistence:** Single JSON file (`journal_data.json`) with an in-memory cache. On Windows the app is portable — data, `media/`, and `settings.json` are stored next to the executable; other platforms use the app documents directory.
 - **No codegen:** Models use manual `toMap()`/`fromMap()` serialization.
 - **Navigation:** Imperative `Navigator.push` — no routing package.
 
@@ -87,7 +87,7 @@ flutter run            # Run the app
 flutter analyze        # Lint check (uses flutter_lints)
 ```
 
-Tests can be added by creating a `test/` directory and running `flutter test`.
+Tests live in the `test/` directory and run with `flutter test`.
 
 ## Platform Support
 
@@ -117,11 +117,7 @@ Tests can be added by creating a `test/` directory and running `flutter test`.
 <img width="152" height="339" alt="Screenshot 2026-07-20 204713" src="https://github.com/user-attachments/assets/f9c0546f-e926-42b8-9149-2e5880b2ab71" />
 
 ## Todo
-- Add a green color scheme
-- add a color scheme picker in settings
-- make sync ask you for time periods for sync
-- make sync work with deleting entries
-- make disabling sync not forget your key
-- resize icon
-
-
+- split json files into a folder system of months and years so that way the sync is a lot smaller
+- make portable
+- add installer (for windows) (make it auto detect if its in program file only if its on windows)
+- test linux

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
@@ -366,7 +367,7 @@ class SyncService {
     }
 
     // Merge
-    final merged = _mergeData(localData, remoteData);
+    final merged = mergeData(localData, remoteData);
 
     // Save merged locally
     await localFile.writeAsString(jsonEncode(merged));
@@ -395,7 +396,8 @@ class SyncService {
     }
   }
 
-  Map<String, dynamic> _mergeData(
+  @visibleForTesting
+  Map<String, dynamic> mergeData(
     Map<String, dynamic>? local,
     Map<String, dynamic>? remote,
   ) {
@@ -405,6 +407,7 @@ class SyncService {
         'nextTagId': 1,
         'entries': <dynamic>[],
         'tags': <dynamic>[],
+        'deletedEntryIds': <int>[],
       };
     }
     if (local == null) return remote!;
@@ -431,6 +434,16 @@ class SyncService {
           entryMap[id] = e;
         }
       }
+    }
+
+    // Apply deletions: union of tombstones, remove any matching entry
+    final localDeleted =
+        (local['deletedEntryIds'] as List?)?.cast<int>() ?? [];
+    final remoteDeleted =
+        (remote['deletedEntryIds'] as List?)?.cast<int>() ?? [];
+    final deleted = {...localDeleted, ...remoteDeleted};
+    for (final id in deleted) {
+      entryMap.remove(id);
     }
 
     // Merge tags: combine, dedup by name
@@ -461,6 +474,7 @@ class SyncService {
       'nextTagId': nextTagId,
       'entries': entryMap.values.toList(),
       'tags': tagMap.values.toList(),
+      'deletedEntryIds': deleted.toList()..sort(),
     };
   }
 

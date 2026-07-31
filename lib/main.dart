@@ -1,3 +1,4 @@
+import 'package:ddx_journal/providers/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
@@ -18,12 +19,16 @@ void main() async {
     journalProvider.loadMonth(journalProvider.selectedMonth.year, journalProvider.selectedMonth.month);
   };
 
+  final settingsProvider = SettingsProvider();
+  await settingsProvider.loadSettings();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider.value(value: journalProvider),
         ChangeNotifierProvider.value(value: syncProvider),
+        ChangeNotifierProvider.value(value: settingsProvider)
       ],
       child: const JournalApp(),
     ),
