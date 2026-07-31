@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/journal_provider.dart';
@@ -250,11 +251,7 @@ class SettingsScreen extends StatelessWidget {
                 : null,
           ),
           const Divider(),
-          const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('Journal App'),
-            subtitle: Text('Version 0.1.0'),
-          ),
+          const _AppVersionTile(),
         ],
       ),
     );
@@ -312,6 +309,40 @@ class _SectionHeader extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+}
+
+class _AppVersionTile extends StatefulWidget {
+  const _AppVersionTile();
+
+  @override
+  State<_AppVersionTile> createState() => _AppVersionTileState();
+}
+
+class _AppVersionTileState extends State<_AppVersionTile> {
+  String _version = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    final version =
+        info.buildNumber.isEmpty ? info.version : '${info.version}+${info.buildNumber}';
+    if (!mounted) return;
+    setState(() => _version = version);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.info_outline),
+      title: const Text('Journal App'),
+      subtitle: Text(_version.isEmpty ? 'Version' : 'Version $_version'),
     );
   }
 }
